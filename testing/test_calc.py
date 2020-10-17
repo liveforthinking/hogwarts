@@ -1,7 +1,11 @@
+import allure
 import pytest
+import yaml
+
 from pythoncode.caculator import Caculator
 
 
+@allure.feature("计算器")
 class TestCaculator:
 
     def setup_class(self):
@@ -17,13 +21,21 @@ class TestCaculator:
     def teardown_method(self):
         print("【计算结束】")
 
+    @allure.story("加法")
     @pytest.mark.parametrize('a,b,expect', [(1, 2, 3), (1, 1.4, 2.4), (8.8, 0.2, 9), (20, -12, 8),
-                                            (9223372036854775807, 1, 9223372036854775808)],
-                             ids=['int+int', 'int+float', 'float+float', 'integer+iegative', 'BigNumber'])
+                                            (9223372036854775807, 1, 9223372036854775808), (1, 1, 3)],
+                             ids=['int+int', 'int+float', 'float+float', 'integer+iegative', 'BigNumber', 'fail'])
     def test_add(self, a, b, expect):
         result = self.calc.add(a, b)
         assert result == expect
 
+    @allure.story("减法")
+    @pytest.mark.parametrize('a,b,expect', yaml.safe_load(open('./data.yaml')))
+    def test_sub(self, a, b, expect):
+        result = self.calc.sub(a, b)
+        assert result == expect
+
+    @allure.story("除法")
     @pytest.mark.parametrize('x,div,expect',
                              [(1, 2, 0.5), (2, 0.5, 4), (8.8, 8.8, 1), (20, -2, -10), (1, 0, ZeroDivisionError)],
                              ids=['int/int', 'int/float', 'float/float', 'integer/iegative', 'Zero Division'])
@@ -35,3 +47,4 @@ class TestCaculator:
             with pytest.raises(ZeroDivisionError) as except_info:
                 self.calc.div(x, div)
             assert except_info.type == expect
+
