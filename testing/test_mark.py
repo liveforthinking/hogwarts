@@ -1,7 +1,6 @@
 import pytest
 import yaml
 
-
 def get_envconfig(env):
     with open(f'./data/{env}_env.yaml', encoding='utf-8') as f:
         return yaml.safe_load(f)
